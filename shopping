@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>40 Level Reward Game</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f4f8;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .game {
+      width: 95%;
+      max-width: 500px;
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    .balance {
+      background: #111827;
+      color: white;
+      padding: 15px;
+      border-radius: 12px;
+      margin: 20px 0;
+      font-size: 22px;
+    }
+
+    .progress {
+      margin: 20px 0;
+    }
+
+    .bar {
+      width: 100%;
+      height: 14px;
+      background: #ddd;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      background: #22c55e;
+      transition: 0.3s;
+    }
+
+    .level {
+      font-size: 28px;
+      font-weight: bold;
+      margin: 25px 0 10px;
+    }
+
+    .question {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .message {
+      margin-top: 15px;
+      min-height: 25px;
+      font-weight: bold;
+    }
+
+    .completed {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      background: #ecfdf5;
+      border-radius: 12px;
+    }
+
+    .reset {
+      background: #6b7280;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="game">
+
+  <h1>🎮 Reward Game</h1>
+  <p>Complete all 40 levels!</p>
+
+  <div class="balance">
+    🪙 Coins: <span id="coins">0</span>
+  </div>
+
+  <div class="progress">
+    Level <span id="currentLevel">1</span> / 40
+
+    <div class="bar">
+      <div class="bar-fill" id="progressBar"></div>
+    </div>
+  </div>
+
+  <div id="gameArea">
+
+    <div class="level">
+      Level <span id="levelNumber">1</span>
+    </div>
+
+    <div class="question">
+      Choose the correct answer:
+      <br><br>
+      What is 2 + 2?
+    </div>
+
+    <button onclick="answer(4)">4</button>
+    <button onclick="answer(5)">5</button>
+    <button onclick="answer(6)">6</button>
+
+    <div class="message" id="message"></div>
+
+  </div>
+
+  <div class="completed" id="completed">
+    <h2>🎉 Congratulations!</h2>
+    <p>You completed all 40 levels.</p>
+    <br>
+    <strong>Final Coins: <span id="finalCoins"></span></strong>
+  </div>
+
+  <button class="reset" onclick="resetGame()">
+    Reset Game
+  </button>
+
+</div>
+
+<script>
+
+  let level = Number(localStorage.getItem("gameLevel")) || 1;
+  let coins = Number(localStorage.getItem("gameCoins")) || 0;
+
+  const totalLevels = 40;
+
+  function updateUI() {
+
+    document.getElementById("coins").textContent = coins;
+    document.getElementById("currentLevel").textContent = level;
+    document.getElementById("levelNumber").textContent = level;
+
+    const progress = ((level - 1) / totalLevels) * 100;
+
+    document.getElementById("progressBar").style.width =
+      progress + "%";
+
+    if (level > totalLevels) {
+      document.getElementById("gameArea").style.display = "none";
+      document.getElementById("completed").style.display = "block";
+      document.getElementById("finalCoins").textContent = coins;
+    }
+  }
+
+  function answer(selectedAnswer) {
+
+    const message = document.getElementById("message");
+
+    if (selectedAnswer === 4) {
+
+      const reward = 100;
+
+      coins += reward;
+      level++;
+
+      localStorage.setItem("gameLevel", level);
+      localStorage.setItem("gameCoins", coins);
+
+      message.textContent =
+        "✅ Correct! +" + reward + " coins";
+
+      updateUI();
+
+    } else {
+
+      message.textContent =
+        "❌ Wrong answer. Try again.";
+
+    }
+
+  }
+
+  function resetGame() {
+
+    level = 1;
+    coins = 0;
+
+    localStorage.removeItem("gameLevel");
+    localStorage.removeItem("gameCoins");
+
+    document.getElementById("gameArea").style.display = "block";
+    document.getElementById("completed").style.display = "none";
+
+    document.getElementById("message").textContent = "";
+
+    updateUI();
+  }
+
+  updateUI();
+
+</script>
+
+</body>
+</html>
